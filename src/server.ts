@@ -2,7 +2,7 @@ import {config} from "dotenv-flow";
 import express from 'express';
 import bodyParser from 'body-parser';
 import DBConnector from './dbconfig/DBConnector';
-import taskModelInit from './models/TaskModel';
+import {Task, taskModelInit} from './models/TaskModel';
 import tasksRouter from './routers/TasksRouter';
 
 /** Code based on https://github.com/CyberZujo/todo-app **/
@@ -37,8 +37,10 @@ class Server {
 
   private dbConnect() {
     new DBConnector().connect()
-      .then((res: string) => console.log('\n\n👍 👍 👍 👍 👍 👍 👍 👍    DB connected    👍 👍 👍 👍 👍 👍 👍 👍\n\n'))
-      .catch((error: any) => {
+      .then(() => {
+        console.log('\n\n👍 👍 👍 👍 👍 👍 👍 👍    DB connected    👍 👍 👍 👍 👍 👍 👍 👍\n\n');
+      })
+      .catch((error: Error) => {
         console.error('\n\n⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔    Unable to connect to the DB:', error, '    ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔\n\n');
         throw error;
       });
@@ -55,14 +57,14 @@ class Server {
   public start = () => {
     let port: number;
     try {
-      port = parseInt(process.env.API_PORT);
+      port = parseInt(process.env.API_PORT || '');
     } catch (err) {
       throw err;
     }
     return new Promise((resolve, reject) => {
-      this.app.listen(port, () => {
-        resolve(port);
-      }).on('error', (err: Object) => reject(err));
+        this.app.listen(port, () => {
+          resolve(port);
+        }).on('error', (err: Object) => reject(err));
     })
   }
 }

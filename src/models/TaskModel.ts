@@ -17,7 +17,9 @@ interface TaskCreationAttributes extends Optional<TaskAttributes, 'id' | 'finish
 class Task extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
   public id!: string; // Note that the `null assertion` `!` is required in strict mode.
   public name!: string;
+  // @ts-ignore: responsibility passed to sequelize
   public start: Date;   // Decided not make it readonly for future develop project - like adding `change start time end-point`
+  // @ts-ignore: responsibility passed to sequelize
   public finish: Date | null;
 }
 
@@ -50,4 +52,4 @@ const taskModelInit = (sequelize: Sequelize) => {
   console.log('👍 👍 👍 👍    Initialised ORM model: ', result, '    👍 👍 👍 👍')
 }
 
-export default taskModelInit;
+export { TaskAttributes, TaskCreationAttributes, Task, taskModelInit };

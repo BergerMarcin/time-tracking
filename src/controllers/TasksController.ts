@@ -1,5 +1,8 @@
+import express from 'express';
+import {QueryTypes} from 'sequelize';
+import DBConnector from "../dbconfig/DBConnector";
 import moment from "moment-timezone";
-import configuredPool from "../dbconfig/DBConnector";
+import { TaskAttributes, TaskCreationAttributes } from "../models/TaskModel";
 
 /**
  * Code based on:
@@ -9,12 +12,25 @@ import configuredPool from "../dbconfig/DBConnector";
 
 class TasksController {
   static readonly queries = {
-    all: "SELECT * FROM tasks",
-    current: "SELECT * FROM tasks WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
-    start: "INSERT INTO tasks VALUES (uuid_generate_v4(), $1 , NOW())",
-    stop: "UPDATE tasks SET finish=NOW() WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
-    setTZ: (tz) => `SET timezone = '${tz}'`
+    all: {
+      query: "SELECT * FROM tasks",
+      type: QueryTypes.SELECT
+    },
+    current: {
+      query: "SELECT * FROM tasks WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
+      type: QueryTypes.SELECT
+    },
+    start: {
+      query: "INSERT INTO tasks VALUES (uuid_generate_v4(), $1 , NOW())",
+      type: QueryTypes.INSERT
+    },
+    stop: {
+      query: "UPDATE tasks SET finish=NOW() WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
+      type: QueryTypes.UPDATE
+    },
+    setTZ: (tz: string): string => `SET timezone = '${tz}'`
   };
+
   static readonly dateFormat = 'YYYY-MM-DD HH:mm'
 
   constructor() {
@@ -23,48 +39,59 @@ class TasksController {
     console.log('TasksController.dateFormat: ', TasksController.dateFormat);
   }
 
-  public static convertUTCtoTZ(tasks: object, timezone: string): object {
+  public static parseReqParam (req: express.Request, paramName: string): string {
+    if (req.params[paramName] && typeof req.params[paramName] === "string") return req.params[paramName]
+    // @ts-ignore: verified if string
+    if (req.query[paramName] && typeof req.query[paramName] === "string") return req.query[paramName]
+    return ''
+  }
+
+  public static parseCheckTZ (timezone: string): string {
+    if (!timezone) return ''
+    const tz = timezone.replace('_', '/').trim().toLowerCase()
+    console.log('parseCheckTZ. tz: ', tz)
+    if (!moment.tz.names().map(n => n.toLowerCase()).includes(tz)) return ''
+    return tz;
+  }
+
+  public static tasksDateUTCtoTZ(tasks: object, timezone: string): object {
     const dateUTCtoTZ = (datetime: string): string => {
       return moment.tz(datetime, timezone).format(TasksController.dateFormat);
     }
 
-    const rowDatesUTCtoTZ = (task: object): object => {
-      console.log('row: ', task)
+    const taskDatesUTCtoTZ = (task: any): any => {
       return {
         ...task,
-        // start: task.start ? dateUTCtoTZ(task.start) : null,
-        // finish: task.finish ? dateUTCtoTZ(task.finish) : null
+        start: dateUTCtoTZ(task.start),
+        finish: task.finish ? dateUTCtoTZ(task.finish) : null
       }
     }
 
-    return Array.isArray(tasks) ? tasks.map(task => rowDatesUTCtoTZ(task)) : rowDatesUTCtoTZ(tasks);
+    return Array.isArray(tasks) ? tasks.map(task => taskDatesUTCtoTZ(task)) : taskDatesUTCtoTZ(tasks);
   }
 
-  public async all(req, res) {
+  public async all(req: express.Request, res: express.Response) {
     console.log('\n\n📖 📖 📖 📖 📖 📖 📖 📖    TasksController.all    📖 📖 📖 📖 📖 📖 📖 📖');
-    // TODO: Uncomment when ready for timezone from request/query
-    // console.log('Timezone: ', req.data.tz)
-    // if (!moment.tz.names().includes(req.data.tz)) {
-    //   const errorMsg = 'Wrong request timezone of: ' + req.data.tz
-    //   console.error('TasksController.all ERROR: ', errorMsg)
-    //   res.status(400).send(errorMsg);
-    // }
-    // try {
-    //   const client = await configuredPool().connect();
-    //   // TODO: change to timezone to req.data.tz
-    //   await client.query(TasksController.queries.setTZ('Europe/Warsaw'));
-    //   const tz = await client.query('SHOW TIMEZONE')
-    //   console.log('DB timezone: ', tz.rows)
-    //   const {rows} = await client.query(TasksController.queries.all);
-    //   const tasks = TasksController.convertUTCtoTZ(rows, 'Europe/Warsaw');
-    //   client.release();
-    //
-    //   res.send(tasks);
-    //   console.log('TasksController.all response: ', tasks)
-    // } catch (error) {
-    //   console.error('TasksController.all ERROR: ', error)
-    //   res.status(500).send(error);
-    // }
+    const requestTZ: string = TasksController.parseCheckTZ(TasksController.parseReqParam(req, 'timezone'));
+    if (!requestTZ) {
+      const errorMsg = 'Wrong request timezone of: ' + req.params.timezone
+      console.error('⛔ ⛔ ⛔ ⛔    TasksController.all ERROR: ', errorMsg, '    ⛔ ⛔ ⛔ ⛔')
+      res.status(400).send(errorMsg);
+      return;
+    }
+    console.log('Request timezone: ', requestTZ)
+    try {
+      await DBConnector.sequelize.query(TasksController.queries.setTZ(requestTZ));
+      const [dbTZ, metadata] = await DBConnector.sequelize.query('SHOW TIMEZONE')
+      console.log("Set DB's timezone: ", dbTZ);
+      let tasks: any = await DBConnector.sequelize.query(TasksController.queries.all.query, { type: TasksController.queries.all.type });
+      tasks = TasksController.tasksDateUTCtoTZ(tasks, requestTZ);
+      res.send(tasks);
+      console.log('👍 👍 👍 👍    TasksController.all response: ', tasks, '    👍 👍 👍 👍')
+    } catch (error) {
+      console.error('⛔ ⛔ ⛔ ⛔    TasksController.all ERROR: ', error, '    ⛔ ⛔ ⛔ ⛔')
+      res.status(500).send(error);
+    }
   }
 }
 

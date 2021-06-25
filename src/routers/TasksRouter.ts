@@ -6,7 +6,8 @@ import TasksController from '../controllers/TasksController';
 const router = Router();
 const tasksController = new TasksController();
 
-router.get('/all', tasksController.all);
+// Working URI (params) and old-fashioned URL (query)
+router.get(['/all/:timezone', '/all'], tasksController.all);
 
 // router.get('/current', tasksController.current);
 //
