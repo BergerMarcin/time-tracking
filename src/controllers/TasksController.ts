@@ -1,6 +1,12 @@
 import moment from "moment-timezone";
 import configuredPool from "../dbconfig/DBConnector";
 
+/**
+ * Code based on:
+ * https://github.com/CyberZujo/todo-app
+ * https://sequelize.org/master/manual/raw-queries.html
+**/
+
 class TasksController {
   static readonly queries = {
     all: "SELECT * FROM tasks",

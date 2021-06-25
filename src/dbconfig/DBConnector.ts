@@ -1,19 +1,6 @@
-// import {Pool} from 'pg';
-//
-// // NOTE: Below must be function (instead of object) to avoid set/construct/call it before
-// //       process.envs is set with dotenv-flow package @ server.ts
-// const configuredPool = () => {
-//   return new Pool({
-//     connectionString: process.env.DB_CONNECTION,
-//     max: 20,
-//     idleTimeoutMillis: 30000,
-//     connectionTimeoutMillis: 2000,
-//   })
-// };
-//
-// export default configuredPool;
-
 import {Sequelize} from 'sequelize';
+
+/** Code based on https://sequelize.org/master/manual/getting-started.html **/
 
 class DBConnector {
   static sequelize
@@ -21,7 +8,7 @@ class DBConnector {
   private setConnection() {
     DBConnector.sequelize = new Sequelize(process.env.DB_CONNECTION, {
       dialect: 'postgres',
-      logging: (...msg) => console.log(msg)
+      logging: (...msg) => console.log(msg)   // Displays all log function call parameters
     });
   }
 

@@ -1,5 +1,7 @@
-import express, { Router } from 'express';
+import { Router } from 'express';
 import TasksController from '../controllers/TasksController';
+
+/** Code based on https://sequelize.org/master/manual/getting-started.html **/
 
 const router = Router();
 const tasksController = new TasksController();

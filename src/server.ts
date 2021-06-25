@@ -1,10 +1,11 @@
 import {config} from "dotenv-flow";
-import express, {Application, Router} from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
-import tasksRouter from './routers/TasksRouter';
 import DBConnector from './dbconfig/DBConnector';
+import taskModelInit from './models/TaskModel';
+import tasksRouter from './routers/TasksRouter';
 
-// import configuredPool from './dbconfig/dbconnector';
+/** Code based on https://github.com/CyberZujo/todo-app **/
 
 class Server {
   private app;
@@ -15,9 +16,11 @@ class Server {
     this.config();
     this.routerConfig();
     this.dbConnect();
+    this.initModels();
   }
 
   private setEnvs() {
+    console.log('\n\n🔧 🔧 🔧 🔧 🔧 🔧 🔧    Setting process.envs from .env.* files    🔧 🔧 🔧 🔧 🔧 🔧 🔧');
     // process.env.NODE_ENV should be set @ package.json
     process.env.NODE_ENV = process.env.NODE_ENV || 'development';
     console.log('Starting directory for process.env: ' + process.cwd());
@@ -38,11 +41,11 @@ class Server {
       .catch((error: any) => {
         console.error('\n\n⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔    Unable to connect to the DB:', error, '    ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔\n\n');
         throw error;
-      })
-    // configuredPool().connect(function (err, client, done) {
-    //   if (err) throw new Error(err);
-    //   console.log(`!!! SUCCESS !!!    DB "${process.env.DB_DATABASE}" connected    !!! SUCCESS !!!`);
-    // });
+      });
+  }
+
+  private initModels() {
+    taskModelInit(DBConnector.sequelize);
   }
 
   private routerConfig() {
