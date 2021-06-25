@@ -55,7 +55,9 @@ Simple API, simple framework. Latest version
 I rely on it and I am sure I have proper .envs acc. NODE_ENV set in scripts of package.json
 
 ### pg
-Simple, non-blocking PostgreSQL client for Node.js
+Simple, non-blocking PostgreSQL client for Node.js (Driver)
+
+### sequelize
 
 ### moment-timezone
 Old good package to solve issues with timezones
