@@ -72,7 +72,7 @@ MVC with Express.js (but without View as backend app) <br/>
 # Developing issues
 ## Connect DB - unavailable process.envs - JS set objects first before functions running 
 Unfortunately I could not connect DB informing me that marcin (me as a Linux user) try to connect DB although I set proper process.env <br/>
-I found out that configuredPool (which was that time simple object) @ dbconnector.ts has no proper process.envs. 
+I found out that configuredPool (which was that time simple object) @ DBConnector.ts has no proper process.envs. 
 I mean configuredPool (as a simple object) had been set before process.envs was set (process.envs was set more sophisticated by using class function setEnvs @ server.ts) <br/>
 I solved that issue with changing configuredPool to function (which is called acc code flow so after process.envs setting)<br/>
 That was good lesson of how TS is transpiled and JS is running with simple object and classes 

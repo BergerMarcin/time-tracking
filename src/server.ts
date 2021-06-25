@@ -2,7 +2,9 @@ import {config} from "dotenv-flow";
 import express, {Application, Router} from 'express';
 import bodyParser from 'body-parser';
 import tasksRouter from './routers/TasksRouter';
-import configuredPool from './dbconfig/dbconnector';
+import DBConnector from './dbconfig/DBConnector';
+
+// import configuredPool from './dbconfig/dbconnector';
 
 class Server {
   private app;
@@ -31,10 +33,16 @@ class Server {
   }
 
   private dbConnect() {
-    configuredPool().connect(function (err, client, done) {
-      if (err) throw new Error(err);
-      console.log(`!!! SUCCESS !!!    DB "${process.env.DB_DATABASE}" connected    !!! SUCCESS !!!`);
-    });
+    new DBConnector().connect()
+      .then((res: string) => console.log('\n\n👍 👍 👍 👍 👍 👍 👍 👍    DB connected    👍 👍 👍 👍 👍 👍 👍 👍\n\n'))
+      .catch((error: any) => {
+        console.error('\n\n⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔    Unable to connect to the DB:', error, '    ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔ ⛔\n\n');
+        throw error;
+      })
+    // configuredPool().connect(function (err, client, done) {
+    //   if (err) throw new Error(err);
+    //   console.log(`!!! SUCCESS !!!    DB "${process.env.DB_DATABASE}" connected    !!! SUCCESS !!!`);
+    // });
   }
 
   private routerConfig() {
