@@ -1,0 +1,396 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API for tasks time tracking, single user  ",
+    "version": "1.0",
+    "description": "",
+    "contact": {
+      "name": "Marcin Berger",
+      "email": "marcin.berger@wp.pl"
+    },
+    "termsOfService": "Not defined",
+    "license": {
+      "name": "MIT",
+      "url": "no restrictions, open"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/": {
+      "parameters": [],
+      "get": {
+        "summary": "Check if API is working",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "return \"API is working\"",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "Get User Alice Smith": {
+                    "value": {
+                      "id": 142,
+                      "firstName": "Alice",
+                      "lastName": "Smith",
+                      "email": "alice.smith@gmail.com",
+                      "dateOfBirth": "1997-10-31",
+                      "emailVerified": true,
+                      "signUpDate": "2019-08-24"
+                    }
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example": {
+                    "value": "API is working"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "examples": {}
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "operationId": "",
+        "description": "Check if API is working"
+      }
+    },
+    "/all": {
+      "get": {
+        "summary": "Get ALL tasks",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                },
+                "examples": {
+                  "Example with finished and current tasks": {
+                    "value": [
+                      {
+                        "id": "bcfddc3e-16a7-478d-83f0-f9309076bc0b",
+                        "name": "Some new task no.1",
+                        "start": "2021-06-26T06:20:56.878Z",
+                        "finish": "2021-06-26T06:21:03.631Z"
+                      },
+                      {
+                        "id": "85a0802a-ec56-4591-8a4d-e9c694c40843",
+                        "name": "Some new task no.2",
+                        "start": "2021-06-26T09:10:35.011Z",
+                        "finish": "2021-06-26T09:10:35.020Z"
+                      },
+                      {
+                        "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
+                        "name": "Some new task no.3",
+                        "start": "2021-06-26T10:21:03.639Z",
+                        "finish": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "operationId": "",
+        "description": "Get all tasks of DB (end-point important for tests)"
+      }
+    },
+    "/current": {
+      "get": {
+        "summary": "Get CURRENT task",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                },
+                "examples": {
+                  "Example with finished and current tasks": {
+                    "value": {
+                      "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
+                      "name": "Some new task",
+                      "start": "2021-06-26T06:21:03.639Z",
+                      "finish": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "": {
+            "description": "Current task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                },
+                "examples": {
+                  "Example of current task ": {
+                    "value": {
+                      "id": "157c22ff-2328-4209-9515-f4093476f792",
+                      "name": "My new task from my new company",
+                      "start": "2021-06-26 07:47:24.691279+02",
+                      "finished": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "",
+        "description": "Get current tasks \n\nCurrent task means:\n - the latest acc. start property \n - not finished acc. finish property (finish property null)"
+      },
+      "parameters": []
+    },
+    "/start": {
+      "post": {
+        "summary": "START new task",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "finished": {
+                      "$ref": "#/components/schemas/Task"
+                    },
+                    "started": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "finished": {
+                          "id": "157c22ff-2328-4209-9515-f4093476f792",
+                          "name": "My new task from my new company",
+                          "start": "2021-06-26T06:20:56.878Z",
+                          "finish": "2021-06-26T06:21:03.631Z"
+                        }
+                      },
+                      {
+                        "started": {
+                          "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
+                          "name": "Some new task",
+                          "start": "2021-06-26T06:21:03.639Z",
+                          "finish": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "description": "Start new task what means:\n - finished current task\n - create new task with passed name, with actual date time\n  \nEndpoint returns both:\n - finished task\n - new task"
+      }
+    },
+    "/stop": {
+      "post": {
+        "summary": "STOP current task",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
+                      "name": "Some new task",
+                      "start": "2021-06-26T06:21:03.639Z",
+                      "finish": "2021-06-26T08:18:30.360381Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "description": "Stop current task what means:\n - fill-in finish property of the task current with actual date time\n  \n Endpoint returns finished task"
+      },
+      "parameters": [],
+      "patch": {
+        "summary": "",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "id": "157c22ff-2328-4209-9515-f4093476f792",
+                      "name": "My new task from my new company",
+                      "start": "2021-06-26T09:10:35.011Z",
+                      "finished": "2021-06-26T09:10:35.020Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "description": "Stop current task what means:\n - fill-in finish property of the task current with actual date time\n  \n Endpoint returns finished task"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "title": "Task",
+        "type": "object",
+        "description": "Single task model",
+        "x-examples": {
+          "Current task example": {
+            "value": {
+              "id": "157c22ff-2328-4209-9515-f4093476f792",
+              "name": "My new task from my new company",
+              "start": "2021-06-26 07:47:24.691279+02",
+              "finished": null
+            }
+          },
+          "Finished task example": {
+            "value": {
+              "id": "157c22ff-2328-4209-9515-f4093476f792",
+              "name": "My new task from my new company",
+              "start": "2021-06-26 07:47:24.691279+02",
+              "finished": "2021-06-26 08:02:57.417965+02"
+            }
+          }
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the given task. UUIDV4",
+            "minLength": 36,
+            "maxLength": 36,
+            "example": "157c22ff-2328-4209-9515-f4093476f792",
+            "format": "uuid",
+            "pattern": "^[a-f0-9 -]+"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the task",
+            "example": "My new task from my new company",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-06-26T09:10:35.011Z",
+            "description": "Date time with timezone of started task."
+          },
+          "finished": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date time with timezone of finished task. If null task is not finished (such task should be current task)",
+            "example": "2021-06-26T09:10:35.020Z   or   null"
+          }
+        },
+        "required": [
+          "name",
+          "start"
+        ]
+      }
+    },
+    "securitySchemes": {}
+  }
+}
