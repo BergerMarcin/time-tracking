@@ -37,6 +37,10 @@ class TasksController {
     console.log('TasksController.queries: ', TasksController.queries);
   }
 
+  static introLog (type: string) {
+    console.log(`\n\n📖 📖 📖 📖 📖 📖 📖 📖    TasksController.${type}    📖 📖 📖 📖 📖 📖 📖 📖`);
+  }
+
   static async queryHandler(type: string, req: express.Request, res: express.Response, queryParams?: any[]) {
     try {
       // do things before main query (in case start new task not finished task should be stopped)
@@ -89,10 +93,6 @@ class TasksController {
     }
   }
 
-  static introLog (type: string) {
-    console.log(`\n\n📖 📖 📖 📖 📖 📖 📖 📖    TasksController.${type}    📖 📖 📖 📖 📖 📖 📖 📖`);
-  }
-
   public async all(req: express.Request, res: express.Response) {
     TasksController.introLog('all');
     await TasksController.queryHandler('all', req, res);
@@ -105,7 +105,7 @@ class TasksController {
 
   public async start(req: express.Request, res: express.Response) {
     TasksController.introLog('start');
-    console.log('Payload (req.body): ', req.body);
+    console.log('Request body: ', req.body);
     if (!req.body.name) {
       const errorMsg = `No name of new task`;
       console.error(`⛔ ⛔ ⛔ ⛔    TasksController.start ERROR: `, errorMsg, '    ⛔ ⛔ ⛔ ⛔');
