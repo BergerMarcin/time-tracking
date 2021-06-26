@@ -6,12 +6,6 @@ Based on article
 of Haris Zujo and [related repo](https://github.com/CyberZujo/todo-app)
 
 
-# API documentation
-
-
-> TimeZone
-> API (& DB) delivers UTC date time
-
 # Install
 ## DB PostgreSQL
 
@@ -44,6 +38,14 @@ Tests cover all API end-points
 npm run dev       // to start API
 npm run test      // to start end-point tests
 ```
+
+# API documentation
+OpenAPI3.0 created with https://stoplight.io
+
+See `./reference` folder of the project
+
+> TimeZone
+> API (& DB) delivers UTC date time
 
 <br/><hr/><hr/><hr/>
 
