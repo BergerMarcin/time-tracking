@@ -1,6 +1,6 @@
 import express from 'express';
 import {QueryTypes} from 'sequelize';
-import DBConnector from "../dbconfig/DBConnector";
+import DBConnector from "../DBConnector";
 import moment from "moment-timezone";
 import { TaskAttributes, TaskCreationAttributes } from "../models/TaskModel";
 

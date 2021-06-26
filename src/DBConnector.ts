@@ -1,9 +1,10 @@
 import {Sequelize} from 'sequelize';
-import {Task} from "../models/TaskModel";
+import {Task, taskModelInit} from "./models/TaskModel";
 
 /** Code based on https://sequelize.org/master/manual/getting-started.html **/
 
 class DBConnector {
+  // only 1 instance of sequelize (so only 1 connection with DB per 1 instance of app)
   public static sequelize: Sequelize;
 
   private setConnection() {
@@ -11,6 +12,10 @@ class DBConnector {
       dialect: 'postgres',
       logging: (...msg) => console.log(msg)   // Displays all log function call parameters
     });
+  }
+
+  private initModels() {
+    taskModelInit(DBConnector.sequelize);
   }
 
   private testConnection(): Promise<void> {
@@ -35,6 +40,7 @@ class DBConnector {
   public connect (): Promise<void> {
     return new Promise((resolve, reject) => {
       this.setConnection();
+      this.initModels();
       this.testConnection().then(() => {
         this.createTableIfNotExists().then(() => resolve()).catch((error: Error) => reject(error));
       }).catch((error: Error) => reject(error));
