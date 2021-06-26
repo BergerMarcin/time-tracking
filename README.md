@@ -8,16 +8,9 @@ of Haris Zujo and [related repo](https://github.com/CyberZujo/todo-app)
 
 # API documentation
 
+
 > TimeZone
-> 
-> In order to avoid timezone changes issues, DB date-time data are timestamps with timezone
-> Moreover DB operates on set timezone (and internally recalculated date-time to set timezone)
->
-> API returns response with date-times acc. set timezone in format `YYYY-MM-DD HH:mm`.
-> 
-> Therefore ***timezone is request parameters*** of all requests as 'Continent/City' (available list acc. `moment.tz.names()` of `moment-timezone` package)
-> 
-> It is recommended at requests to use ***browser timezone*** taken with: `Intl.DateTimeFormat().resolvedOptions().timeZone;`
+> API (& DB) delivers UTC date time
 
 # Install
 ## DB PostgreSQL
@@ -41,7 +34,7 @@ docker-compose up --build -d
 
 # Stack
 ## PostgreSQL
-I use it last time 1.5 year ago but let's see
+Simple SQL
 
 ## Node.js
 According recruitment list I apply for Node.js so choice is obvious
@@ -52,15 +45,14 @@ Simple API, simple framework. Latest version
 
 ## Packages
 ### dotenv-flow
-I rely on it and I am sure I have proper .envs acc. NODE_ENV set in scripts of package.json
+Deliver proper process.env acc. NODE_ENV set in scripts of package.json
 
 ### pg
 Simple, non-blocking PostgreSQL client for Node.js (Driver)
 
 ### sequelize
-
-### moment-timezone
-Old good package to solve issues with timezones
+ORM based on `pg` package. <br/> 
+Universal due to: applicable for many SQLs, for TS, allows to use raw SQL queries (in most cases the best performance)
 
 ## Docker
 I am used to use it but I will use it later on as slow down compilation 
@@ -83,6 +75,13 @@ For some reason at controller class (TasksController) private properties could n
 I mean when I pass on controller function of that class to the Express router it has no access to class private properties <br/>
 I solved that by creating static properties accessible @ router
 
+## Date timezone and format
+Responsibility of changing date time acc. timezone and format moved to frontend (on stage 4. of app developing - [see app developing plan](#app))
+
+## Unavailable result type of raw SQL query @ sequelize
+Using raw SQL query @ sequelize concludes no type of results, so TS could be not applied <br/>
+That means model querying should be implemented but not implemented due to time limitation. Just added to the plan
+
 <br/><hr/><hr/><hr/>
 
 # Developing plan
@@ -104,9 +103,11 @@ I solved that by creating static properties accessible @ router
 3. Start it up locally & test manual
 4. Add ORM
 5. Develop routing and make queries more general (to make it DRY)
-6. Tests 
-7. Dockerise
-8. Deployment
+6. Auto tests
+7. Implement model querying of sequelize (instead of raw SQL query)
+8. Dockerise
+9. Deployment
+10. CI auto tests
 
 ## Documentation
 1. Continuous develop app's Readme.md

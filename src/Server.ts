@@ -32,7 +32,7 @@ class Server {
     return new Promise((resolve, reject) => {
         this.app.listen(port, () => {
           resolve(port);
-        }).on('error', (err: Object) => reject(err));
+        }).on('error', (err: Error) => reject(err));
     })
   }
 }
