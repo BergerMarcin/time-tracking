@@ -1,17 +1,17 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API for tasks time tracking, single user  ",
+    "title": "API for tasks time tracking, single user",
     "version": "1.0",
-    "description": "",
+    "description": "REST API for tasks time tracking, single user",
     "contact": {
       "name": "Marcin Berger",
       "email": "marcin.berger@wp.pl"
     },
-    "termsOfService": "Not defined",
+    "termsOfService": "https://opensource.org/licenses/MIT",
     "license": {
       "name": "MIT",
-      "url": "no restrictions, open"
+      "url": "https://opensource.org/licenses/MIT"
     }
   },
   "servers": [
@@ -33,19 +33,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "examples": {
-                  "Get User Alice Smith": {
-                    "value": {
-                      "id": 142,
-                      "firstName": "Alice",
-                      "lastName": "Smith",
-                      "email": "alice.smith@gmail.com",
-                      "dateOfBirth": "1997-10-31",
-                      "emailVerified": true,
-                      "signUpDate": "2019-08-24"
-                    }
-                  }
-                }
+                "examples": {}
               },
               "text/plain": {
                 "schema": {
@@ -79,7 +67,7 @@
             "headers": {}
           }
         },
-        "operationId": "",
+        "operationId": "get-apiWorking",
         "description": "Check if API is working"
       }
     },
@@ -134,7 +122,7 @@
             }
           }
         },
-        "operationId": "",
+        "operationId": "get-all",
         "description": "Get all tasks of DB (end-point important for tests)"
       }
     },
@@ -148,13 +136,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Task"
-                  }
+                  "$ref": "#/components/schemas/Task"
                 },
                 "examples": {
-                  "Example with finished and current tasks": {
+                  "Example of current tasks": {
                     "value": {
                       "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
                       "name": "Some new task",
@@ -195,7 +180,7 @@
             }
           }
         },
-        "operationId": "",
+        "operationId": "get-current",
         "description": "Get current tasks \n\nCurrent task means:\n - the latest acc. start property \n - not finished acc. finish property (finish property null)"
       },
       "parameters": []
@@ -203,7 +188,7 @@
     "/start": {
       "post": {
         "summary": "START new task",
-        "operationId": "",
+        "operationId": "post-start",
         "responses": {
           "200": {
             "description": "OK",
@@ -222,24 +207,20 @@
                 },
                 "examples": {
                   "Example": {
-                    "value": [
-                      {
-                        "finished": {
-                          "id": "157c22ff-2328-4209-9515-f4093476f792",
-                          "name": "My new task from my new company",
-                          "start": "2021-06-26T06:20:56.878Z",
-                          "finish": "2021-06-26T06:21:03.631Z"
-                        }
+                    "value": {
+                      "finished": {
+                        "id": "157c22ff-2328-4209-9515-f4093476f792",
+                        "name": "My new task from my new company",
+                        "start": "2021-06-26T06:20:56.878Z",
+                        "finish": "2021-06-26T06:21:03.631Z"
                       },
-                      {
-                        "started": {
-                          "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
-                          "name": "Some new task",
-                          "start": "2021-06-26T06:21:03.639Z",
-                          "finish": null
-                        }
+                      "started": {
+                        "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
+                        "name": "Some new task",
+                        "start": "2021-06-26T06:21:03.639Z",
+                        "finish": null
                       }
-                    ]
+                    }
                   }
                 }
               }
@@ -258,45 +239,10 @@
       }
     },
     "/stop": {
-      "post": {
-        "summary": "STOP current task",
-        "operationId": "",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "id": "e4761b20-acfb-43b9-8623-096ade7d3552",
-                      "name": "Some new task",
-                      "start": "2021-06-26T06:21:03.639Z",
-                      "finish": "2021-06-26T08:18:30.360381Z"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error, especially in case DB issues\nReturns Error",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        },
-        "description": "Stop current task what means:\n - fill-in finish property of the task current with actual date time\n  \n Endpoint returns finished task"
-      },
       "parameters": [],
       "patch": {
-        "summary": "",
-        "operationId": "",
+        "summary": "STOP current task",
+        "operationId": "patch-stop",
         "responses": {
           "200": {
             "description": "OK",
@@ -382,7 +328,7 @@
             "type": "string",
             "format": "date-time",
             "description": "Date time with timezone of finished task. If null task is not finished (such task should be current task)",
-            "example": "2021-06-26T09:10:35.020Z   or   null"
+            "example": "2021-06-26T09:10:35.020Z"
           }
         },
         "required": [
