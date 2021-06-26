@@ -1,4 +1,4 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import {QueryTypes} from 'sequelize';
 import DBConnector from "../DBConnector";
 import { TaskAttributes, TaskCreationAttributes } from "../models/TaskModel";
@@ -41,7 +41,7 @@ class TasksController {
     console.log(`\n\n📖 📖 📖 📖 📖 📖 📖 📖    TasksController.${type}    📖 📖 📖 📖 📖 📖 📖 📖`);
   }
 
-  static async queryHandler(type: string, req: express.Request, res: express.Response, queryParams?: any[]) {
+  static async queryHandler(type: string, req: Request, res: Response, queryParams?: any[]) {
     try {
       // do things before main query (in case start new task not finished task should be stopped)
       let preResult;
@@ -93,17 +93,17 @@ class TasksController {
     }
   }
 
-  public async all(req: express.Request, res: express.Response) {
+  public async all(req: Request, res: Response) {
     TasksController.introLog('all');
     await TasksController.queryHandler('all', req, res);
   }
 
-  public async current(req: express.Request, res: express.Response) {
+  public async current(req: Request, res: Response) {
     TasksController.introLog('current');
     await TasksController.queryHandler('current', req, res);
   }
 
-  public async start(req: express.Request, res: express.Response) {
+  public async start(req: Request, res: Response) {
     TasksController.introLog('start');
     console.log('Request body: ', req.body);
     if (!req.body.name) {
@@ -115,7 +115,7 @@ class TasksController {
     await TasksController.queryHandler('start', req, res, [req.body.name]);
   }
 
-  public async stop(req: express.Request, res: express.Response) {
+  public async stop(req: Request, res: Response) {
     TasksController.introLog('stop');
     await TasksController.queryHandler('stop', req, res);
   }
