@@ -8,16 +8,9 @@ of Haris Zujo and [related repo](https://github.com/CyberZujo/todo-app)
 
 # API documentation
 
+
 > TimeZone
-> 
-> In order to avoid timezone changes issues, DB date-time data are timestamps with timezone
-> Moreover DB operates on set timezone (and internally recalculated date-time to set timezone)
->
-> API returns response with date-times acc. set timezone in format `YYYY-MM-DD HH:mm`.
-> 
-> Therefore ***timezone is request parameters*** of all requests as 'Continent/City' (available list acc. `moment.tz.names()` of `moment-timezone` package)
-> 
-> It is recommended at requests to use ***browser timezone*** taken with: `Intl.DateTimeFormat().resolvedOptions().timeZone;`
+> API (& DB) delivers UTC date time
 
 # Install
 ## DB PostgreSQL
@@ -37,11 +30,26 @@ docker-compose up --build -d
 
 > Use .env.* files to set credentials depending on environment
 
+# Tests
+Tests cover all API end-points 
+
+> Tests are for empty or filled DB <br/>
+> Tests do not cover boundary conditions of empty DB <br/>
+> Tests do not delete created tasks and do not re-start current task of time before tests <br/>
+> Tests work on default DB <br/>
+> Subtests works independently of one another
+
+### To run test locally
+```
+npm run dev       // to start API
+npm run test      // to start end-point tests
+```
+
 <br/><hr/><hr/><hr/>
 
 # Stack
 ## PostgreSQL
-I use it last time 1.5 year ago but let's see
+Simple SQL
 
 ## Node.js
 According recruitment list I apply for Node.js so choice is obvious
@@ -52,15 +60,14 @@ Simple API, simple framework. Latest version
 
 ## Packages
 ### dotenv-flow
-I rely on it and I am sure I have proper .envs acc. NODE_ENV set in scripts of package.json
+Deliver proper process.env acc. NODE_ENV set in scripts of package.json
 
 ### pg
 Simple, non-blocking PostgreSQL client for Node.js (Driver)
 
 ### sequelize
-
-### moment-timezone
-Old good package to solve issues with timezones
+ORM based on `pg` package. <br/> 
+Universal due to: applicable for many SQLs, for TS, allows to use raw SQL queries (in most cases the best performance)
 
 ## Docker
 I am used to use it but I will use it later on as slow down compilation 
@@ -72,8 +79,8 @@ MVC with Express.js (but without View as backend app) <br/>
 # Developing issues
 ## Connect DB - unavailable process.envs - JS set objects first before functions running 
 Unfortunately I could not connect DB informing me that marcin (me as a Linux user) try to connect DB although I set proper process.env <br/>
-I found out that configuredPool (which was that time simple object) @ dbconnector.ts has no proper process.envs. 
-I mean configuredPool (as a simple object) had been set before process.envs was set (process.envs was set more sophisticated by using class function setEnvs @ server.ts) <br/>
+I found out that configuredPool (which was that time simple object) @ DBConnector.ts has no proper process.envs. 
+I mean configuredPool (as a simple object) had been set before process.envs was set (process.envs was set more sophisticated by using class function setEnvs @ Server.ts) <br/>
 I solved that issue with changing configuredPool to function (which is called acc code flow so after process.envs setting)<br/>
 That was good lesson of how TS is transpiled and JS is running with simple object and classes 
 
@@ -82,6 +89,21 @@ I am used to set queries in one place (good code practise, cleaner code, allows 
 For some reason at controller class (TasksController) private properties could not be reached at that class function (of course I use `this`)
 I mean when I pass on controller function of that class to the Express router it has no access to class private properties <br/>
 I solved that by creating static properties accessible @ router
+
+## Date timezone and format
+Responsibility of changing date time acc. timezone and format moved to frontend (on stage 4. of app developing - [see app developing plan](#app))
+
+## Unavailable result type of raw SQL query @ sequelize
+Using raw SQL query @ sequelize concludes no type of results, so TS could be not applied <br/>
+That means model querying should be implemented but not implemented due to time limitation. Just added to the plan
+
+## Sequelize has problem to return id of created row out-of-the-box
+After adding start routing I found out I have no id @ result of newly created row/task. That was completely unexpected for me, and not only for me, see:
+ - https://github.com/sequelize/sequelize/issues/5499#issuecomment-480528090
+ - https://github.com/sequelize/sequelize/issues/7689
+
+I solved it by adding `RETURNING id` to INSERT query based on: https://stackoverflow.com/questions/2944297/postgresql-function-for-last-inserted-id <br/>
+I decided to help also other developers 😁😎: https://github.com/sequelize/sequelize/issues/7689#issuecomment-868946611
 
 <br/><hr/><hr/><hr/>
 
@@ -104,9 +126,11 @@ I solved that by creating static properties accessible @ router
 3. Start it up locally & test manual
 4. Add ORM
 5. Develop routing and make queries more general (to make it DRY)
-6. Tests 
-7. Dockerise
-8. Deployment
+6. Auto tests
+7. Implement model querying of sequelize (instead of raw SQL query)
+8. Dockerise
+9. Deployment
+10. CI auto tests
 
 ## Documentation
 1. Continuous develop app's Readme.md
@@ -115,5 +139,5 @@ I solved that by creating static properties accessible @ router
 
 ## Today status:
 DB: DONE! :) <br/>
-App: p.1-3 DONE! <br/>
+App: p.1-6 DONE! <br/>
 DOCS: p.1-2 ONGOING <br/>
