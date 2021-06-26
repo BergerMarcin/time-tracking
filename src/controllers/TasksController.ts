@@ -1,62 +1,50 @@
-import moment from "moment-timezone";
-import configuredPool from "../dbconfig/dbconnector";
+import express from 'express';
+import {QueryTypes} from 'sequelize';
+import DBConnector from "../DBConnector";
+import { TaskAttributes, TaskCreationAttributes } from "../models/TaskModel";
+
+/**
+ * Code based on:
+ * https://github.com/CyberZujo/todo-app
+ * https://sequelize.org/master/manual/raw-queries.html
+**/
 
 class TasksController {
+  // TODO: Implement model querying of sequelize (instead of raw SQL query)
   static readonly queries = {
-    all: "SELECT * FROM tasks",
-    current: "SELECT * FROM tasks WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
-    start: "INSERT INTO tasks VALUES (uuid_generate_v4(), $1 , NOW())",
-    stop: "UPDATE tasks SET finish=NOW() WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
-    setTZ: (tz) => `SET timezone = '${tz}'`
+    all: {
+      query: "SELECT * FROM tasks",
+      type: QueryTypes.SELECT
+    },
+    current: {
+      query: "SELECT * FROM tasks WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
+      type: QueryTypes.SELECT
+    },
+    start: {
+      query: "INSERT INTO tasks VALUES (uuid_generate_v4(), $1 , NOW())",
+      type: QueryTypes.INSERT
+    },
+    stop: {
+      query: "UPDATE tasks SET finish=NOW() WHERE start IN (SELECT MAX(start) FROM tasks WHERE finish IS NULL)",
+      type: QueryTypes.UPDATE
+    },
   };
-  static readonly dateFormat = 'YYYY-MM-DD HH:mm'
 
   constructor() {
-    console.log('\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!! TasksController parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.log('\n\n🔧 🔧 🔧 🔧 🔧 🔧 🔧    TasksController parameters    🔧 🔧 🔧 🔧 🔧 🔧 🔧');
     console.log('TasksController.queries: ', TasksController.queries);
-    console.log('TasksController.dateFormat: ', TasksController.dateFormat);
   }
 
-  public static convertUTCtoTZ (tasks: object, timezone: string): object {
-    const dateUTCtoTZ = (datetime: string): string => {
-      return moment.tz(datetime, timezone).format(TasksController.dateFormat);
-    }
-
-    const rowDatesUTCtoTZ = (task: object): object => {
-      console.log('row: ', task)
-      return {
-        ...task,
-        start: task.start ? dateUTCtoTZ(task.start) : null,
-        finish: task.finish ? dateUTCtoTZ(task.finish) : null
-      }
-    }
-
-    return Array.isArray(tasks) ? tasks.map(task => rowDatesUTCtoTZ(task)) : rowDatesUTCtoTZ(tasks);
-  }
-
-  public async all(req, res) {
-    console.log('\n\n**************************** TasksController.all ****************************');
-    // TODO: Uncomment when ready for timezone from request/query
-    // console.log('Timezone: ', req.data.tz)
-    // if (!moment.tz.names().includes(req.data.tz)) {
-    //   const errorMsg = 'Wrong request timezone of: ' + req.data.tz
-    //   console.error('TasksController.all ERROR: ', errorMsg)
-    //   res.status(400).send(errorMsg);
-    // }
+  public async all(req: express.Request, res: express.Response) {
+    console.log('\n\n📖 📖 📖 📖 📖 📖 📖 📖    TasksController.all    📖 📖 📖 📖 📖 📖 📖 📖');
     try {
-      const client = await configuredPool().connect();
-      // TODO: change to timezone to req.data.tz
-      await client.query(TasksController.queries.setTZ('Europe/Warsaw'));
-      const tz = await client.query('SHOW TIMEZONE')
-      console.log('DB timezone: ', tz.rows)
-      const {rows} = await client.query(TasksController.queries.all);
-      const tasks = TasksController.convertUTCtoTZ(rows, 'Europe/Warsaw');
-      client.release();
-
+      // TODO: Implement model querying of sequelize (instead of raw SQL query)
+      // @ts-ignore: to apply here TS type checking required change to ORM/sequelize query
+      const tasks: TaskAttributes[] = await DBConnector.sequelize.query(TasksController.queries.all.query, { type: TasksController.queries.all.type });
       res.send(tasks);
-      console.log('TasksController.all response: ', tasks)
+      console.log('👍 👍 👍 👍    TasksController.all response: ', tasks, '    👍 👍 👍 👍')
     } catch (error) {
-      console.error('TasksController.all ERROR: ', error)
+      console.error('⛔ ⛔ ⛔ ⛔    TasksController.all ERROR: ', error, '    ⛔ ⛔ ⛔ ⛔')
       res.status(500).send(error);
     }
   }
