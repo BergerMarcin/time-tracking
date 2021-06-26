@@ -5,19 +5,53 @@ Based on article
 ["Building and running a Node.JS, TypeScript, PostgreSQL app with Docker"](https://medium.com/nsoft/building-and-running-nodejs-typescript-postgresql-application-with-docker-3878240a2f73)
 of Haris Zujo and [related repo](https://github.com/CyberZujo/todo-app)
 
-
-# Install
-## DB PostgreSQL
-
-## Node, TS, Docker, etc.
-
+## FINAL status of the project 
+@ the very end of Readme
 
 # Run
 Running our application services with Docker
 ```sh
 docker-compose up --build -d
 ```
+Unfortunately not working and time finished to solved Docker issue
 
+# Locally install & run
+## DB PostgreSQL
+Checking version of postgresql terminal app <br/>
+`sudo psql -V`
+
+Create the file repository configuration: <br/>
+`sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'`
+
+Import the repository signing key: <br/>
+`wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -`
+
+Update the package lists: <br/>
+`sudo apt-get update` <br/>
+`sudo apt-get upgrade`
+
+Install the latest version of PostgreSQL <br/>
+`sudo apt-get install -y postgresql postgresql-contrib postgresql-client pgadmin3`
+
+Changing password of default user postgres <br/>
+`sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"`
+
+Start running server <br/>
+`sudo service postgresql start`
+
+For test in PostgreSQL terminal start server <br/>
+`sudo psql -h localhost -U postgres -W`
+
+
+## APP Node, TS, packages, etc.
+Fork that repository and from project catalogue in terminal: 
+```
+npm i
+npm run dev
+``` 
+
+## Usage API
+Via Postman, Talented API Tester or similar 
 
 # Settings
 > NODE_ENV should be set @ package.json (otherwise it will be set to `development`)
@@ -40,9 +74,9 @@ npm run test      // to start end-point tests
 ```
 
 # API documentation
-OpenAPI3.0 created with https://stoplight.io
+@ `./reference/API-for-tasks-time-tracking,-single-user.json`
 
-See `./reference` folder of the project
+OpenAPI3.0 created with https://stoplight.io
 
 > TimeZone
 > API (& DB) delivers UTC date time
@@ -139,7 +173,7 @@ I decided to help also other developers 😁😎: https://github.com/sequelize/s
 2. Describe tools more details
 3. Create Swagger API documentation
 
-## Today status:
+## FINAL status:
 DB: DONE! :) <br/>
-App: p.1-6 DONE! <br/>
-DOCS: p.1-2 ONGOING <br/>
+App: p.1-6 DONE! (but not started-up dockerised) <br/>
+DOCS: p.1-3 DONE :) <br/>
