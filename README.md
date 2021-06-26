@@ -82,6 +82,14 @@ Responsibility of changing date time acc. timezone and format moved to frontend 
 Using raw SQL query @ sequelize concludes no type of results, so TS could be not applied <br/>
 That means model querying should be implemented but not implemented due to time limitation. Just added to the plan
 
+## Sequelize has problem to return id of created row out-of-the-box
+After adding start routing I found out I have no id @ result of newly created row/task. That was completely unexpected for me, and not only for me, see:
+ - https://github.com/sequelize/sequelize/issues/5499#issuecomment-480528090
+ - https://github.com/sequelize/sequelize/issues/7689
+
+I solved it by adding `RETURNING id` to INSERT query based on: https://stackoverflow.com/questions/2944297/postgresql-function-for-last-inserted-id <br/>
+I decided to help also other developers 😁😎: https://github.com/sequelize/sequelize/issues/7689#issuecomment-868946611
+
 <br/><hr/><hr/><hr/>
 
 # Developing plan

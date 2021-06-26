@@ -8,10 +8,10 @@ const tasksController = new TasksController();
 
 router.get('/all/', tasksController.all);
 
-// router.get('/current', tasksController.current);
-//
-// router.get('/start', tasksController.start);
-//
-// router.get('/stop', tasksController.stop);
+router.get('/current', tasksController.current);
+
+router.post('/start', tasksController.start);
+
+router.patch('/stop', tasksController.stop);
 
 export default router;
