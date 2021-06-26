@@ -30,6 +30,21 @@ docker-compose up --build -d
 
 > Use .env.* files to set credentials depending on environment
 
+# Tests
+Tests cover all API end-points 
+
+> Tests are for empty or filled DB <br/>
+> Tests do not cover boundary conditions of empty DB <br/>
+> Tests do not delete created tasks and do not re-start current task of time before tests <br/>
+> Tests work on default DB <br/>
+> Subtests works independently of one another
+
+### To run test locally
+```
+npm run dev       // to start API
+npm run test      // to start end-point tests
+```
+
 <br/><hr/><hr/><hr/>
 
 # Stack
@@ -124,5 +139,5 @@ I decided to help also other developers 😁😎: https://github.com/sequelize/s
 
 ## Today status:
 DB: DONE! :) <br/>
-App: p.1-3 DONE! <br/>
+App: p.1-6 DONE! <br/>
 DOCS: p.1-2 ONGOING <br/>
